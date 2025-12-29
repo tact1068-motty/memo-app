@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -179,8 +180,8 @@
         const SUPABASE_URL = 'https://zhaxfhodycmboovdtehn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_KefaGNYdfteV4lR8JE6QJQ_OO_29tRc';
         
-        // Supabaseクライアントを初期化
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Supabaseクライアントを初期化（※変数名を supabaseClient に）
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         // HTML要素を取得
         const memoInput = document.getElementById('memoInput');
@@ -196,7 +197,7 @@
             memoList.innerHTML = '';
 
             // Supabaseからデータを取得（新しい順に並べる）
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('memos')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -209,7 +210,7 @@
                 return;
             }
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 memoList.innerHTML = '<div class="empty-message">まだ投稿がありません。最初の投稿をしてみましょう！</div>';
                 return;
             }
@@ -252,7 +253,7 @@
             }
 
             // Supabaseにデータを追加
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('memos')
                 .insert([
                     { content: content }
@@ -281,7 +282,7 @@
             }
 
             // Supabaseからデータを削除
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('memos')
                 .delete()
                 .eq('id', id);
@@ -309,8 +310,9 @@
         // 🎬 イベント設定
         // ========================================
         addBtn.addEventListener('click', addMemo);
-        memoInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+        memoInput.addEventListener('keydown', (e) => {
+            // 日本語入力中（変換中）の Enter は無視
+            if (e.key === 'Enter' && !e.isComposing) {
                 addMemo();
             }
         });
@@ -322,6 +324,4 @@
     </script>
 </body>
 </html>
-
-
-
+``
