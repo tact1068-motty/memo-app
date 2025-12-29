@@ -3,361 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高機能メモ帳アプリ</title>
+    <title>共有掲示板アプリ</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            padding: 40px;
         }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .header h1 {
-            font-size: 28px;
+
+        h1 {
+            color: #667eea;
+            text-align: center;
             margin-bottom: 10px;
+            font-size: 2.5em;
         }
-        .weather-info {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 16px;
-            margin-top: 10px;
-            backdrop-filter: blur(10px);
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
         }
-        .nav-buttons {
+
+        .input-area {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-bottom: 30px;
         }
-        .nav-btn {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .nav-btn:hover {
-            background: white;
-            color: #667eea;
-        }
-        .nav-btn.active {
-            background: white;
-            color: #667eea;
-        }
-        .content {
-            padding: 30px;
-        }
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
-        textarea {
-            width: 100%;
-            height: 400px;
-            padding: 20px;
+
+        #memoInput {
+            flex: 1;
+            padding: 15px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 16px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            resize: vertical;
             transition: border-color 0.3s;
         }
-        textarea:focus {
+
+        #memoInput:focus {
             outline: none;
             border-color: #667eea;
         }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        button {
+
+        #addBtn {
+            padding: 15px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
             border-radius: 10px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        button:hover {
+
+        #addBtn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        button:active {
+
+        #addBtn:active {
             transform: translateY(0);
         }
-        .status {
-            margin-top: 15px;
-            padding: 15px;
-            background: #f0f0f0;
+
+        #memoList {
+            list-style: none;
+        }
+
+        .memo-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
             border-radius: 10px;
-            font-size: 14px;
-            color: #666;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: slideIn 0.3s ease-out;
         }
-        .settings-group {
-            margin-bottom: 25px;
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .settings-group h3 {
-            color: #667eea;
+
+        .memo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .memo-content {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        .memo-time {
+            color: #999;
+            font-size: 12px;
             margin-bottom: 10px;
         }
-        .settings-group p {
-            color: #666;
-            line-height: 1.6;
+
+        .deleteBtn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
         }
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+
+        .deleteBtn:hover {
+            background: #ff5252;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            padding: 20px;
             font-size: 16px;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div>
-                <h1>📝 高機能メモ帳</h1>
-                <div class="weather-info" id="weatherInfo">
-                    🌤️ 天気：取得中...
-                </div>
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn active" onclick="switchScreen('memo')">メモ</button>
-                <button class="nav-btn" onclick="switchScreen('settings')">設定</button>
-            </div>
+        <h1>📝 共有掲示板</h1>
+        <p class="subtitle">みんなで使える掲示板アプリ</p>
+        
+        <div class="input-area">
+            <input type="text" id="memoInput" placeholder="メッセージを入力...">
+            <button id="addBtn">投稿</button>
         </div>
-
-        <div class="content">
-            <!-- メモ画面 -->
-            <div id="memoScreen" class="screen active">
-                <textarea id="memoText" placeholder="ここにメモを入力してください..."></textarea>
-                <div class="button-group">
-                    <button onclick="saveMemo()">💾 保存</button>
-                    <button onclick="downloadMemo()">📥 ダウンロード</button>
-                    <button onclick="clearMemo()">🗑️ クリア</button>
-                </div>
-                <div class="status" id="status">
-                    💡 メモは自動的にこのブラウザに保存されます
-                </div>
-            </div>
-
-            <!-- 設定画面 -->
-            <div id="settingsScreen" class="screen">
-                <div class="settings-group">
-                    <h3>⚙️ アプリ設定</h3>
-                    <p>バージョン: 1.1.0（天気機能追加版）</p>
-                    <p>保存方式: ローカルストレージ</p>
-                </div>
-                <div class="settings-group">
-                    <h3>🌤️ 天気機能について</h3>
-                    <p>このアプリは、Open-Meteo APIを使用して東京の天気情報を取得しています。</p>
-                    <p>アプリを開いた時に自動的に最新の天気を表示します。</p>
-                </div>
-                <div class="settings-group">
-                    <h3>📊 使用状況</h3>
-                    <p>現在の文字数: <span id="charCount">0</span> 文字</p>
-                </div>
-            </div>
-        </div>
+        
+        <div class="loading" id="loading">読み込み中...</div>
+        <ul id="memoList"></ul>
     </div>
 
+    <!-- ⭐ Supabase CDN（ここでSupabaseを読み込む） -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         // ========================================
-        // 🌤️ 天気取得機能（新機能！）
+        // ⭐ ここにあなたのAPIキーを貼り付けてください！
         // ========================================
+        const SUPABASE_URL = 'あなたのProject URLをここに貼り付け';
+        const SUPABASE_KEY = 'あなたのanon publicキーをここに貼り付け';
         
-        // アプリを開いた瞬間に天気を取得
-        window.addEventListener('load', function() {
-            getWeather();
-        });
-
-        function getWeather() {
-            // 東京の座標（緯度・経度）
-            const latitude = 35.6762;  // 東京の緯度
-            const longitude = 139.6503; // 東京の経度
-            
-            // Open-Meteo APIのURL（ウェイターさんへの注文書）
-            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
-            
-            // fetch = 「ウェイターさん、これ注文お願い！」
-            fetch(apiUrl)
-                .then(response => response.json())  // 届いた料理を開封
-                .then(data => {
-                     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                     // ここを追加！
-                        console.log('取得したデータ:', data);
-                        console.log('天気部分:', data.current_weather);
-                    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    // 天気データが届いた！
-                    const weather = data.current_weather;
-                    const temp = weather.temperature;
-                    const weatherCode = weather.weathercode;
-                    
-                    // 天気コードを絵文字に変換
-                    const weatherEmoji = getWeatherEmoji(weatherCode);
-                    const weatherText = getWeatherText(weatherCode);
-                    
-                    // 画面に表示
-                    document.getElementById('weatherInfo').innerHTML = 
-                        `${weatherEmoji} ${weatherText} ${temp}℃`;
-                })
-                .catch(error => {
-                    // エラーが起きた時（ウェイターさんが転んだ時）
-                    document.getElementById('weatherInfo').innerHTML = 
-                        '⚠️ 天気情報を取得できませんでした';
-                    console.error('天気取得エラー:', error);
-                });
-             }
-
-        // 天気コードを絵文字に変換する関数
-        function getWeatherEmoji(code) {
-            if (code === 0) return '☀️';
-            if (code <= 3) return '⛅';
-            if (code <= 49) return '🌫️';
-            if (code <= 69) return '🌧️';
-            if (code <= 79) return '🌨️';
-            if (code <= 99) return '⛈️';
-            return '🌤️';
-        }
-
-        // 天気コードを日本語に変換する関数
-        function getWeatherText(code) {
-            if (code === 0) return '快晴';
-            if (code <= 3) return '晴れ';
-            if (code <= 49) return '曇り';
-            if (code <= 69) return '雨';
-            if (code <= 79) return '雪';
-            if (code <= 99) return '雷雨';
-            return '晴れ';
-        }
-
-        // ========================================
-        // 📝 メモ機能（既存の機能）
-        // ========================================
+        // Supabaseクライアントを初期化
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        const memoTextarea = document.getElementById('memoText');
-        const statusDiv = document.getElementById('status');
+        // HTML要素を取得
+        const memoInput = document.getElementById('memoInput');
+        const addBtn = document.getElementById('addBtn');
+        const memoList = document.getElementById('memoList');
+        const loading = document.getElementById('loading');
 
-        // ページを開いた時、保存されているメモを読み込む
-        window.addEventListener('load', function() {
-            const savedMemo = localStorage.getItem('myMemo');
-            if (savedMemo) {
-                memoTextarea.value = savedMemo;
-                updateCharCount();
-            }
-        });
+        // ========================================
+        // 📖 データベースからメモを読み込む
+        // ========================================
+        async function loadMemos() {
+            loading.style.display = 'block';
+            memoList.innerHTML = '';
 
-        // メモを保存する関数
-        function saveMemo() {
-            const memoContent = memoTextarea.value;
-            localStorage.setItem('myMemo', memoContent);
-            statusDiv.innerHTML = '✅ メモを保存しました！';
-            setTimeout(() => {
-                statusDiv.innerHTML = '💡 メモは自動的にこのブラウザに保存されます';
-            }, 2000);
-        }
+            // Supabaseからデータを取得（新しい順に並べる）
+            const { data, error } = await supabase
+                .from('memos')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        // メモをダウンロードする関数
-        function downloadMemo() {
-            const memoContent = memoTextarea.value;
-            if (!memoContent.trim()) {
-                alert('メモが空です！');
+            loading.style.display = 'none';
+
+            if (error) {
+                console.error('エラー:', error);
+                memoList.innerHTML = '<div class="empty-message">データの読み込みに失敗しました</div>';
                 return;
             }
-            
-            const blob = new Blob([memoContent], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'memo.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            statusDiv.innerHTML = '📥 メモをダウンロードしました！';
-            setTimeout(() => {
-                statusDiv.innerHTML = '💡 メモは自動的にこのブラウザに保存されます';
-            }, 2000);
-        }
 
-        // メモをクリアする関数
-        function clearMemo() {
-            if (confirm('本当にメモを削除しますか？')) {
-                memoTextarea.value = '';
-                localStorage.removeItem('myMemo');
-                statusDiv.innerHTML = '🗑️ メモをクリアしました';
-                updateCharCount();
-                setTimeout(() => {
-                    statusDiv.innerHTML = '💡 メモは自動的にこのブラウザに保存されます';
-                }, 2000);
+            if (data.length === 0) {
+                memoList.innerHTML = '<div class="empty-message">まだ投稿がありません。最初の投稿をしてみましょう！</div>';
+                return;
             }
-        }
 
-        // 画面を切り替える関数
-        function switchScreen(screenName) {
-            // すべての画面を非表示
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
+            // 取得したデータを画面に表示
+            data.forEach(memo => {
+                displayMemo(memo);
             });
-            
-            // すべてのボタンの選択状態を解除
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // 指定された画面を表示
-            if (screenName === 'memo') {
-                document.getElementById('memoScreen').classList.add('active');
-                document.querySelectorAll('.nav-btn')[0].classList.add('active');
-            } else if (screenName === 'settings') {
-                document.getElementById('settingsScreen').classList.add('active');
-                document.querySelectorAll('.nav-btn')[1].classList.add('active');
-                updateCharCount();
-            }
         }
 
-        // 文字数をカウントする関数
-        function updateCharCount() {
-            const count = memoTextarea.value.length;
-            const charCountSpan = document.getElementById('charCount');
-            if (charCountSpan) {
-                charCountSpan.textContent = count;
-            }
+        // ========================================
+        // 📝 メモを画面に表示する
+        // ========================================
+        function displayMemo(memo) {
+            const li = document.createElement('li');
+            li.className = 'memo-item';
+            
+            // 日時を見やすく整形
+            const date = new Date(memo.created_at);
+            const timeString = date.toLocaleString('ja-JP');
+            
+            li.innerHTML = `
+                <div class="memo-content">${escapeHtml(memo.content)}</div>
+                <div class="memo-time">${timeString}</div>
+                <button class="deleteBtn" onclick="deleteMemo('${memo.id}')">削除</button>
+            `;
+            
+            memoList.appendChild(li);
         }
 
-        // メモが変更されたら文字数を更新
-        memoTextarea.addEventListener('input', updateCharCount);
+        // ========================================
+        // ➕ 新しいメモを追加する
+        // ========================================
+        async function addMemo() {
+            const content = memoInput.value.trim();
+            
+            if (content === '') {
+                alert('メッセージを入力してください');
+                return;
+            }
+
+            // Supabaseにデータを追加
+            const { data, error } = await supabase
+                .from('memos')
+                .insert([
+                    { content: content }
+                ])
+                .select();
+
+            if (error) {
+                console.error('エラー:', error);
+                alert('投稿に失敗しました');
+                return;
+            }
+
+            // 入力欄をクリア
+            memoInput.value = '';
+            
+            // 画面を再読み込み
+            loadMemos();
+        }
+
+        // ========================================
+        // 🗑️ メモを削除する
+        // ========================================
+        async function deleteMemo(id) {
+            if (!confirm('本当に削除しますか？')) {
+                return;
+            }
+
+            // Supabaseからデータを削除
+            const { error } = await supabase
+                .from('memos')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                console.error('エラー:', error);
+                alert('削除に失敗しました');
+                return;
+            }
+
+            // 画面を再読み込み
+            loadMemos();
+        }
+
+        // ========================================
+        // 🛡️ XSS対策（セキュリティ）
+        // ========================================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========================================
+        // 🎬 イベント設定
+        // ========================================
+        addBtn.addEventListener('click', addMemo);
+        memoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addMemo();
+            }
+        });
+
+        // ========================================
+        // 🚀 ページ読み込み時に実行
+        // ========================================
+        loadMemos();
     </script>
 </body>
 </html>
